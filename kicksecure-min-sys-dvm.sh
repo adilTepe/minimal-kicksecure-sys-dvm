@@ -4,24 +4,27 @@ SOURCE_TEMPLATE=debian-12-minimal
 TARGET_TEMPLATE=kicksecure-17-min
 TARGET_TEMPLATE_DISP="$TARGET_TEMPLATE"-dvm""
 
+MEMORY_MIN=512
+MEMORY_MAX=MEMORY_MIN*10
+
 # download the template
 qvm-template install $SOURCE_TEMPLATE 
 # update repos and upgrade packages
-qvm-run --pass-io -u root $SOURCE_TEMPLATE "apt-get update && apt-get full-upgrade -y"
+qvm-run --pass-io --no-gui --user=root $SOURCE_TEMPLATE "apt-get update && apt-get full-upgrade -y"
 # install basic packages
-qvm-run --pass-io -u root $SOURCE_TEMPLATE "apt-get install -y qubes-core-agent-passwordless-root qubes-app-shutdown-idle qubes-core-agent-nautilus nautilus xfce4-terminal qubes-menus pulseaudio-qubes"
+qvm-run --pass-io --no-gui --user=root $SOURCE_TEMPLATE "apt-get install -y qubes-core-agent-passwordless-root qubes-app-shutdown-idle qubes-core-agent-nautilus nautilus xfce4-terminal qubes-menus pulseaudio-qubes"
 # set Xfce4-terminal as default
-qvm-run --pass-io -u root $SOURCE_TEMPLATE "update-alternatives --set x-terminal-emulator /usr/bin/xfce4-terminal.wrapper"
+qvm-run --pass-io --no-gui --user=root $SOURCE_TEMPLATE "update-alternatives --set x-terminal-emulator /usr/bin/xfce4-terminal.wrapper"
 # shutdown
 qvm-shutdown --wait $SOURCE_TEMPLATE
 sleep 20
 # set memory limits
-qvm-prefs $SOURCE_TEMPLATE memory 512
-qvm-prefs $SOURCE_TEMPLATE maxmem 5120
+qvm-prefs $SOURCE_TEMPLATE memory $MEMORY_MIN
+qvm-prefs $SOURCE_TEMPLATE maxmem $MEMORY_MAX
 # clone the updated template
 qvm-clone $SOURCE_TEMPLATE $TARGET_TEMPLATE
-qvm-prefs $TARGET_TEMPLATE memory 512
-qvm-prefs $TARGET_TEMPLATE maxmem 5120
+qvm-prefs $TARGET_TEMPLATE memory $MEMORY_MIN
+qvm-prefs $TARGET_TEMPLATE maxmem $MEMORY_MAX
 qvm-run --pass-io --no-gui --user=root $TARGET_TEMPLATE 'apt-get update && apt-get dist-upgrade -y'
 # Some packages needed for kicksecure to install
 qvm-run --pass-io --no-gui --user=root $TARGET_TEMPLATE 'apt-get install -y dkms zenity qubes-core-agent-networking qubes-mgmt-salt-vm-connector qubes-kernel-vm-support'
@@ -54,5 +57,5 @@ sleep 20
 qvm-create --template $TARGET_TEMPLATE --label red $TARGET_TEMPLATE_DISP 
 qvm-prefs $TARGET_TEMPLATE_DISP template_for_dispvms True
 qvm-features $TARGET_TEMPLATE_DISP appmenus-dispvm 1  
-qvm-prefs $TARGET_TEMPLATE_DISP memory 512
-qvm-prefs $TARGET_TEMPLATE_DISP maxmem 5120
+qvm-prefs $TARGET_TEMPLATE_DISP memory $MEMORY_MIN
+qvm-prefs $TARGET_TEMPLATE_DISP maxmem $MEMORY_MAX
