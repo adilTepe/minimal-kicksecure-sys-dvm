@@ -1,4 +1,16 @@
-  GNU nano 4.9.3                                                                 ./Scripts/Kicksecure-17-minmod.sh                                                                  Modified  
+#!/bin/bash
+
+SOURCE_TEMPLATE=debian-12-minimal
+TARGET_TEMPLATE=kicksecure-17-min
+TARGET_TEMPLATE_DISP="$TARGET_TEMPLATE"-dvm""
+
+# download the template
+qvm-template install $SOURCE_TEMPLATE 
+# update repos and upgrade packages
+qvm-run --pass-io -u root $SOURCE_TEMPLATE "apt-get update && apt-get full-upgrade -y"
+# install basic packages
+< pulseaudio-qubes"
+# set Xfce4-terminal as default
 qvm-run --pass-io -u root $SOURCE_TEMPLATE "update-alternatives --set x-terminal-emulator /usr/bin/xfce4-terminal.wrapper"
 # shutdown
 qvm-shutdown --wait $SOURCE_TEMPLATE
@@ -28,11 +40,9 @@ qvm-run --pass-io --no-gui --user=user $TARGET_TEMPLATE 'sudo mv /etc/apt/source
 qvm-run --pass-io --no-gui --user=user $TARGET_TEMPLATE 'sudo touch /etc/apt/sources.list'
 qvm-run --pass-io --no-gui --user=user $TARGET_TEMPLATE 'sudo repository-dist --enable --repository stable-proposed-updates'
 
-qvm-run --pass-io --no-gui --user=root $TARGET_TEMPLATE 'apt-get install -y wpasupplicant'
 qvm-run --pass-io --no-gui --user=root $TARGET_TEMPLATE 'apt-get install -y lkrg-dkms tirdad apparmor-notify apparmor-profile-everything libpam-apparmor notification-daemon python3-notify2'
 qvm-prefs -s $TARGET_TEMPLATE kernelopts "apparmor=1 security=apparmor"
-qvm-run --pass-io --no-gui --user=root $TARGET_TEMPLATE "apt-get install -y --no-install-recommends qubes-core-agent-networking qubes-core-agent-network-manager firmware-iwlwifi
- qubes-usb-proxy qubes-input-proxy-sender zenity policykit-1 libblockdev-crypto2 ntfs-3g qubes-core-agent-dom0-updates"
+qvm-run --pass-io --no-gui --user=root $TARGET_TEMPLATE "apt-get install -y --no-install-recommends qubes-core-agent-networking wpasupplicant qubes-core-agent-network-manager firmware-iwlwifi qubes-usb-proxy qubes-input-proxy-sender zenity policykit-1 libblockdev-crypto2 ntfs-3g qubes-core-agent-dom0-updates"
 qvm-shutdown --wait $TARGET_TEMPLATE
 sleep 20
 
